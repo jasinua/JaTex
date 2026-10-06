@@ -1,0 +1,82 @@
+\section{What Gets Converted}\label{sec:features}
+
+\texdocx{} does not take a picture of a \LaTeX{} page. It reads the source,
+works out what each construct \emph{means}, and then picks the closest thing
+Word has for it. Sometimes Word has an exact counterpart: a \cmd{footnote}
+becomes a real Word footnote, and in an article \cmd{section} becomes a paragraph in
+the \emph{Heading~1} style. Sometimes it has something close but not identical, and
+for a few constructs it has nothing, so \texdocx{} keeps the text and, in most
+cases, warns you.
+Table~\ref{tab:features-map} lists what the compiler handles today and how
+faithful each conversion is.
+
+\begin{table}[ht]
+\centering
+\caption{\LaTeX{} constructs and what \texdocx{} turns them into.}\label{tab:features-map}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{3.6cm}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\LaTeX{} construct & Word representation & Fidelity & Notes \\
+\midrule
+\cmd{chapter} \ldots{} \cmd{subparagraph} & Heading~1--6 styles & Native & The class's top level (\cmd{chapter} or \cmd{section}) is Heading~1. Numbers come from a Word multilevel list and match \LaTeX's; starred forms are unnumbered. \\
+\cmd{textbf}, \cmd{emph}, \cmd{textsc}, \cmd{textcolor}, \cmd{large} & Run formatting & Native & Bold, italic, small caps, colour and size are set on the text itself. \\
+Inline and display maths & Office Math (OMML) & Native & Editable in Word's equation editor; see Section~\ref{sec:math}. \\
+Equation numbers & \texttt{SEQ} field on a tab stop & Approximate & The number sits at a right tab; \cmd{eqref} is a \texttt{REF} field to it. \\
+\cmd{label}, \cmd{ref}, \cmd{autoref}, \cmd{cref} & Bookmark and \texttt{REF} field & Native & The cached number is already correct when the file opens. References to list items are plain internal links instead. \\
+\cmd{pageref} & \texttt{PAGEREF} field & Approximate & Shows ``?'' until Word updates fields; only Word knows the page. \\
+\env{itemize}, \env{enumerate} & Word bulleted and numbered lists & Native & \env{enumitem} labels, \texttt{start} and \texttt{resume} are honoured. \\
+\env{description} & Hanging-indent paragraphs & Approximate & The term is bold, followed by its text. \\
+\cmd{footnote} & Word footnote & Native & Links and images inside footnotes work too. \\
+\cmd{href}, \cmd{url} & Hyperlink & Native & Internal targets (\cmd{hyperlink}) become bookmark links. \\
+\env{tabular}, \env{tabularx}, \env{longtable} & Word table & Native & \cmd{multicolumn} and \cmd{multirow} merge cells; \env{longtable} heads repeat on each page. \\
+\env{booktabs} rules & Cell borders & Approximate & Thick and thin borders; the extra vertical padding is not reproduced. \\
+\env{figure}, \env{table}, \cmd{caption} & Block kept with its caption & Approximate & Captions use \texttt{SEQ} fields, but floats stay where they are written. \\
+\cmd{includegraphics} (PNG, JPEG, GIF, BMP) & Inline picture & Native & Sized like \env{graphicx}; \texttt{angle} and \texttt{trim} are ignored with a warning. \\
+SVG images & SVG picture & Approximate & Shown by Word~2016 and later; older readers see a blank fallback. \\
+PDF and EPS images & PNG, JPEG or SVG twin, else placeholder & Lossy & See Section~\ref{sec:figures}. \\
+\env{lstlisting}, \env{minted}, \env{verbatim} & Source Code paragraph & Native & Syntax colours for 28 languages; text is kept exactly. \\
+\cmd{tableofcontents} & \texttt{TOC} field & Native & Filled in when Word updates fields. \\
+\env{fancyhdr} headers and footers & Header and footer parts & Native & \cmd{thepage}, \cmd{leftmark} and \texttt{LastPage} become fields. \\
+\env{minipage}, \cmd{parbox} & Ordinary paragraphs & Lossy & The content is kept but the box is flattened. \\
+\cmd{cite} and friends & Plain text & Lossy & Shows the keys in brackets. \\
+Unknown commands & Their arguments as text & Lossy & Reported as warning W013 with the source line. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The fidelity column uses three levels. They describe what a reader of the Word
+file gets, not how hard the conversion was:
+\begin{description}
+  \item[Native] Word has a feature that does the same job, and \texdocx{} uses
+    it. A co-author editing the file in Word sees ordinary Word objects:
+    headings appear in the navigation pane, footnotes renumber themselves, and
+    equations open in the equation editor.
+  \item[Approximate] The meaning survives but the appearance or behaviour
+    differs in a visible way. A figure stays next to the paragraph it was
+    written after instead of floating to the top of a page; a booktabs rule is a
+    border rather than a rule with its own spacing.
+  \item[Lossy] Some information is dropped. The text is kept so nothing
+    disappears outright, and, except for citations, the compiler prints a
+    warning that points at the line in your source.
+\end{description}
+
+\subsection{Not supported yet}
+
+A few common constructs have no handler yet. Citations are not formatted:
+\cmd{cite}, \cmd{citep}, \cmd{citet} and their \env{biblatex} relatives print
+the bare keys, so \texttt{\textbackslash cite\{knuth84\}} appears as
+``[knuth84]'' and any page or note arguments are dropped. Bibliography
+processing is planned but not started. Theorems are not supported either:
+\cmd{newtheorem} is an unknown command, so a \env{theorem} environment keeps its
+text but loses its ``Theorem~1'' heading and number. \env{tikzpicture} is
+treated the same way, and the drawing commands inside it end up as stray text.
+Finally, a \texttt{.docx} file cannot show PDF or EPS graphics as pictures, and
+\texdocx{} never runs an external converter. A figure included as
+\texttt{plot.pdf} therefore needs a \texttt{plot.png}, \texttt{plot.jpg} or
+\texttt{plot.svg} next to it. Without one you get a placeholder.
+
+\begin{tip}
+Unknown commands and environments, flattened boxes and missing figure twins
+all produce warnings. Run \texdocx{} with \texttt{-{}-strict} to turn every
+warning into an error. The command then exits with a failure status, so a build
+stops instead of quietly approximating.
+\end{tip}

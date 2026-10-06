@@ -1,0 +1,1 @@
+{"name":"@texdocx/smoke","version":"0.0.0","private":true,"type":"module","dependencies":{"@texdocx/digest":"workspace:*","@texdocx/docx":"workspace:*","@texdocx/math":"workspace:*","@texdocx/validator":"workspace:*","fflate":"^0.8.3"}}

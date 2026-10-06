@@ -1,0 +1,15 @@
+{
+  "name": "@texdocx/digest",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@texdocx/core": "workspace:*",
+    "@texdocx/math": "workspace:*",
+    "@texdocx/model": "workspace:*",
+    "shiki": "^4.5.0"
+  }
+}

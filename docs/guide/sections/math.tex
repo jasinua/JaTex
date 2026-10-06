@@ -1,0 +1,115 @@
+\section{Mathematics}\label{sec:math}
+
+A common way to move \LaTeX{} mathematics into Word is to paste each equation in as a
+picture or to flatten it to plain text. \texdocx{} does neither. Its math parser reads
+the same expanded token stream as the rest of the document, so your own macros work inside
+formulas, and it recovers the \emph{structure} of each formula (fractions, scripts, radicals,
+delimiters, matrices) rather than its layout. The \texttt{docx} writer then turns that
+structure into Office Math Markup Language (OMML), the format Word's own equation editor
+uses. Every formula in this section is therefore a native Word equation: click on it and
+you can edit it, change its font size, or copy it into another document.
+
+\subsection{Inline and displayed formulas}
+
+Inline math such as $e^{i\pi} + 1 = 0$ or $\R^n$ stays in the line of text, just as it does in
+\LaTeX. Fractions like $\frac{a}{b}$, roots like $\sqrt{2}$ and Greek letters such as
+$\alpha$, $\beta$ and $\Gamma$ all map to their OMML counterparts. A displayed equation
+gets its own paragraph. The Gaussian integral is a good first example:
+\begin{equation}\label{eq:math-gauss}
+  \int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}.
+\end{equation}
+Because the integral has its limits attached as scripts, Word places them beside the sign,
+which is also what \LaTeX{} does for \cmd{int}. Sums and products put their limits above
+and below in display style:
+\[
+  \sum_{k=1}^{n} k = \frac{n(n+1)}{2},
+  \qquad
+  \lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^{n} = e.
+\]
+Here \cmd{left} and \cmd{right} become a single OMML delimiter object, so Word grows the
+parentheses with their contents. The limit under \cmd{lim} is a real lower-limit object, not a
+subscript.
+
+\subsection{Numbering and cross-references}
+
+Equation~\eqref{eq:math-gauss} above was numbered automatically. In the Word file the number
+is not plain text: it is a \texttt{SEQ Equation} field, wrapped in a bookmark named after the
+\cmd{label}. The equation itself sits at a centre tab stop and the number at a right tab stop
+on the same line. Each \cmd{eqref} becomes a \texttt{REF} field that points at that bookmark,
+with the parentheses added around it, exactly like the reference you just read. Both fields
+carry the number \texdocx{} computed as their cached value, so the document is correct as soon
+as it opens; the fields are designed so that updating them in Word (F9) gives the same numbers.
+
+Multi-line environments number each row separately. In an \env{align} environment every row
+becomes its own Word paragraph, so that it can carry its own number, and \cmd{notag} (or
+\cmd{nonumber}) suppresses the number of a single row:
+\begin{align}
+  f(x) &= (x + 1)^2 \label{eq:math-square} \\
+       &= x^2 + 2x + 1 \notag \\
+  f'(x) &= 2x + 2. \label{eq:math-derivative}
+\end{align}
+The middle row has no number, so the derivative in~\eqref{eq:math-derivative} directly follows
+\eqref{eq:math-square}, just as it would in a PDF. One visible difference remains: because the rows are separate paragraphs,
+Word does not yet line up the equals signs across them. In the starred forms, which
+need no numbers, the rows stay in one OMML equation array and the \& marks do align.
+The starred forms number nothing; here is
+\env{gather*}, which centres each row on its own:
+\begin{gather*}
+  \binom{n}{k} = \frac{n!}{k!\,(n-k)!}, \\
+  \sqrt[3]{27} = 3, \qquad \sqrt{x^2 + y^2} \geq 0.
+\end{gather*}
+Note that \cmd{binom} becomes a bar-less fraction inside parentheses, and the optional argument
+of \cmd{sqrt} becomes the degree of an OMML radical.
+
+\subsection{Matrices and cases}
+
+The \env{pmatrix} and \env{bmatrix} environments become OMML matrices wrapped in round or
+square delimiters:
+\[
+  A = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix},
+  \qquad
+  I_3 = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}.
+\]
+A \env{cases} environment becomes a left-aligned two-column matrix behind a single opening
+brace, with no closing delimiter:
+\begin{equation}\label{eq:math-abs}
+  |x| = \begin{cases}
+    x  & \text{if}\ x \geq 0, \\
+    -x & \text{otherwise.}
+  \end{cases}
+\end{equation}
+Text inside \cmd{text} is written as normal (non-math) text in the equation, so it keeps
+upright letters and its spaces, including those at the start or end of the argument, so
+\verb|\text{ if }| reads exactly as it does in the PDF.
+
+\subsection{Fonts, braces and operators}
+
+Math alphabets are mapped to Unicode mathematical letters, which Word shows directly in the
+equation:
+\cmd{mathbb} gives $\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \R$, and
+\cmd{mathcal} gives $\mathcal{F}$, $\mathcal{L}$ and $\mathcal{O}(n \log n)$. The preamble of
+this guide defines \cmd{R} and \cmd{E} as shorthands for $\R$ and $\E$, and they behave like
+any other macro.
+
+An \cmd{overbrace} with a superscript becomes an OMML group character with an upper limit, so
+the label sits above the brace:
+\begin{equation}\label{eq:math-brace}
+  \overbrace{1 + 1 + \cdots + 1}^{n\ \text{terms}} = n.
+\end{equation}
+Operators declared with \cmd{DeclareMathOperator} are set upright as a single function name.
+This guide's preamble declares \cmd{argmax}, which reads naturally in an expected-value
+problem:
+\begin{equation}\label{eq:math-argmax}
+  \theta^{\ast} = \argmax_{\theta \in \Theta} \E\left[ \log p(x \mid \theta) \right].
+\end{equation}
+Because the preamble uses the unstarred form, the subscript stays to the side even in display
+style, exactly as \LaTeX{} sets it; the starred \cmd{DeclareMathOperator*} would place it
+underneath, like \cmd{lim}. Inline, as in $\argmax_{\theta} f(\theta)$, the subscript is
+always at the side.
+
+\begin{tip}
+The numbers of equations~\eqref{eq:math-gauss} to~\eqref{eq:math-argmax}, and every reference
+to them, are fields. If you rearrange equations in Word, select the whole document and press F9
+to update the fields: the equation numbers are recounted and each reference follows its
+bookmark.
+\end{tip}

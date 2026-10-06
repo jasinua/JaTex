@@ -1,0 +1,30 @@
+{
+  "name": "texdocx",
+  "private": true,
+  "type": "module",
+  "description": "LaTeX to DOCX compiler",
+  "license": "MIT",
+  "engines": {
+    "node": ">=23.6"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json",
+    "verify": "pnpm typecheck && pnpm test",
+    "texdocx": "node packages/cli/src/main.ts"
+  },
+  "devDependencies": {
+    "@texdocx/cli": "workspace:*",
+    "@texdocx/core": "workspace:*",
+    "@texdocx/digest": "workspace:*",
+    "@texdocx/docx": "workspace:*",
+    "@texdocx/math": "workspace:*",
+    "@texdocx/model": "workspace:*",
+    "@texdocx/validator": "workspace:*",
+    "@types/node": "^26.6.4",
+    "fast-check": "^4.10.2",
+    "fflate": "^0.8.3",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

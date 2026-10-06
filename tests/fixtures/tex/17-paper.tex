@@ -1,0 +1,65 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref,listings,enumitem,xcolor}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}\rhead{Fast Sorting}\cfoot{\thepage}
+\graphicspath{{figs/}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bigO}[1]{\mathcal{O}(#1)}
+\DeclareMathOperator{\argmin}{arg\,min}
+\title{Fast Sorting of Nearly Sorted Data}
+\author{Grace Hopper\thanks{Corresponding author.}\\Navy Research Lab \and John von Neumann\\IAS}
+\date{6 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We present an adaptive algorithm that sorts nearly sorted arrays in $\bigO{n \log k}$ time,
+where $k$ is the number of inversions. Experiments in Section~\ref{sec:exp} confirm it.
+\end{abstract}
+\section{Introduction}\label{sec:intro}
+Sorting is fundamental~\cite{knuth1998}. Our contributions are:
+\begin{itemize}[noitemsep]
+  \item an adaptive merge strategy (Section~\ref{sec:method});
+  \item a tight bound, Equation~\eqref{eq:bound};
+  \item an implementation in Python.\footnote{Available at \url{https://example.org/sort}.}
+\end{itemize}
+\section{Method}\label{sec:method}
+Let $x \in \R^n$ and define the disorder
+\begin{equation}\label{eq:bound}
+  D(x) = \sum_{i<j} \mathbf{1}[x_i > x_j] \le \binom{n}{2}.
+\end{equation}
+We choose the run length $r^\star = \argmin_{r \ge 1} \left( \frac{n}{r} + r \log r \right)$.
+\begin{align}
+  T(n) &= 2\,T(n/2) + \bigO{n} \label{eq:rec}\\
+       &= \bigO{n \log n} \notag
+\end{align}
+\begin{lstlisting}[language=Python]
+def adaptive_sort(xs):
+    runs = find_runs(xs)
+    return merge_all(runs)
+\end{lstlisting}
+\section{Experiments}\label{sec:exp}
+Table~\ref{tab:times} and Figure~\ref{fig:speed} summarise the results.
+\begin{table}[t]
+\centering
+\caption{Running time in milliseconds.}\label{tab:times}
+\begin{tabular}{lrr}
+\toprule
+Input & Timsort & Ours \\
+\midrule
+Sorted & 1.2 & \textbf{0.9} \\
+Reversed & 1.4 & \textbf{1.1} \\
+Random & 9.8 & 10.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.6\linewidth]{plot}
+\caption{Speed-up over the baseline.}\label{fig:speed}
+\end{figure}
+\section{Conclusion}
+The recurrence~\eqref{eq:rec} explains the speed-up; see also \autoref{sec:intro}.
+\end{document}

@@ -1,0 +1,31 @@
+\documentclass{article}
+\begin{document}
+Before the list.
+\begin{itemize}
+  \item Apples
+  \item Pears
+  \begin{itemize}
+    \item Conference
+    \item Williams
+  \end{itemize}
+  \item[--] Custom label
+\end{itemize}
+continues without indentation.
+
+\begin{enumerate}
+  \item One\label{it:one}
+  \item Two
+  \begin{enumerate}
+    \item Two-a\label{it:twoa}
+    \item Two-b
+  \end{enumerate}
+  \item Three
+
+  with a second paragraph.
+\end{enumerate}
+\begin{description}
+  \item[Term] Definition of the term.
+  \item[Another] Second definition.
+\end{description}
+Items \ref{it:one} and \ref{it:twoa}.
+\end{document}

@@ -1,0 +1,129 @@
+\section{Figures and Tables}\label{sec:figures}
+
+Figures and tables are where \LaTeX{} and Word differ most. \LaTeX{} moves a float to
+the top of a page, the bottom of a page or a page of its own; Word has nothing comparable. \texdocx{} therefore writes every \env{figure} and \env{table} where it
+appears in the source, accepts and ignores the placement specifier (\texttt{[htbp]} and
+friends), and marks every paragraph of the float before its last caption as
+\emph{keep with next}, so an image never ends up on one page with its caption on the
+next. What you get is a document a co-author can edit without fighting anchored frames.
+
+\subsection{Images and how they are sized}\label{sec:figures-sizing}
+
+\cmd{includegraphics} follows the \textsf{graphicx} rules, so an image is as large in Word
+as it would be in the PDF. The starting point is the image's natural size, computed from
+its pixel dimensions and the resolution stored in the file: the \texttt{pHYs} chunk of a
+PNG or the density in a JPEG's JFIF header, and 72\,dpi when the file records none,
+which is what pdf\TeX{} assumes too. An SVG's natural size comes from its \texttt{width}
+and \texttt{height} attributes or, failing those, its \texttt{viewBox}. The options then
+apply in the usual way:
+\begin{itemize}
+  \item \texttt{scale} multiplies the natural size;
+  \item \texttt{width} or \texttt{height} alone sets that dimension and scales the other
+        to preserve the aspect ratio (\texttt{totalheight} is treated like \texttt{height});
+  \item \texttt{width} and \texttt{height} together stretch the image to exactly that box,
+        unless \texttt{keepaspectratio} is given, in which case it is scaled to the
+        largest size that fits inside the box.
+\end{itemize}
+Lengths may use any unit and any length register: \cmd{textwidth} and \cmd{linewidth} are
+derived from the page set up with \textsf{geometry}, and inside a \env{subfigure} or
+\env{minipage} \cmd{linewidth} is the width of that box. After sizing, one rule is
+specific to \texdocx: an image wider than the text block is scaled down, keeping its
+aspect ratio, to the text width. \LaTeX{} would let it run into the margin with an
+\emph{overfull box} warning; Word would let it run off the page. Give the size to
+\cmd{includegraphics} itself: \cmd{scalebox} and \cmd{resizebox} around an image are
+currently ignored, so the image keeps its own size, and no warning is printed.
+
+Figure~\ref{fig:figures-bars} was included with \verb|width=0.7\linewidth|. Its file is
+600 pixels wide and records 150\,dpi, so its natural width is 4\,inches (about
+10.2\,cm); the explicit width scales it to 70\,\% of the 16\,cm line, 11.2\,cm, exactly
+as in the PDF.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\linewidth]{bars}
+  \caption{A bar chart included at 70\,\% of the line width.}\label{fig:figures-bars}
+\end{figure}
+
+Images are looked up in the project folder (by default the folder of the main file) and
+in every directory named by
+\cmd{graphicspath}; a name without an extension is tried as \texttt{.png}, \texttt{.jpg},
+\texttt{.jpeg}, \texttt{.gif}, \texttt{.svg}, \texttt{.bmp}, \texttt{.pdf} and
+\texttt{.eps}, in that order. Like every other file a document reads, images must lie
+inside the project folder (Section~\ref{sec:security}). PNG, JPEG, GIF, BMP and SVG are
+embedded as they are; SVG images carry a blank PNG fallback, because \texdocx{} bundles no
+rasteriser, so they display in Word 2016 and later. Word cannot embed PDF or EPS
+graphics, so for those \texdocx{} looks for a PNG, SVG or JPEG \emph{twin} with the same
+base name and uses it instead; it never runs an external converter.
+Table~\ref{tab:figures-formats} summarises the rules. Rotation (\texttt{angle}) and
+cropping (\texttt{trim}, \texttt{viewport}) are not applied yet and produce warning
+\texttt{W014}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{How each image format is sized and embedded.}\label{tab:figures-formats}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    & \multicolumn{2}{c}{Handling} \\
+    \cmidrule(l){2-3}
+    Format & Natural size from & Embedded as \\
+    \midrule
+    PNG & pixels and \texttt{pHYs} resolution & the PNG itself \\
+    JPEG & pixels and JFIF density & the JPEG itself \\
+    GIF, BMP & pixels at 96\,dpi (BMP: stored resolution) & the file itself \\
+    SVG & \texttt{width}/\texttt{height} or \texttt{viewBox} & SVG with blank PNG fallback \\
+    \multirow{2}{*}{PDF, EPS} & twin found: the twin's size & the twin \\
+    & no twin & placeholder and \texttt{W014} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Subfigures}\label{sec:figures-subfigures}
+
+The \textsf{subcaption} package's \env{subfigure} environment works as in \LaTeX: each
+panel gets its own caption, lettered (a), (b), \dots, and a \cmd{label} placed after a
+subcaption refers to the panel. Figure~\ref{fig:figures-pair} contains two panels: the
+vector diagram in Figure~\ref{fig:figures-diagram} and the photograph in
+Figure~\ref{fig:figures-photo}. As in \LaTeX, a reference to a panel combines the figure
+number with the panel letter. Two differences remain. Panels are stacked vertically
+rather than placed side by side, so leave out the \cmd{hfill} that usually separates
+them; \texdocx{} would only approximate it with a tab and warn. And a reference to a panel
+is written as plain text such as ``2a'' rather than as a field, so it is not renumbered
+when fields are updated in Word.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}{0.45\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{diagram.svg}
+    \caption{A vector diagram (SVG).}\label{fig:figures-diagram}
+  \end{subfigure}
+  \begin{subfigure}{0.45\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{photo}
+    \caption{A photograph (JPEG).}\label{fig:figures-photo}
+  \end{subfigure}
+  \caption{Two panels in one figure.}\label{fig:figures-pair}
+\end{figure}
+
+\subsection{Captions, references and lists}\label{sec:figures-captions}
+
+A caption's number is not typed into the document as plain text. ``Figure~1'' is the word
+\emph{Figure}, a non-breaking space and the Word field \verb|SEQ Figure \* ARABIC|, with
+the number \LaTeX{} would print stored as the field's cached result; tables use
+\verb|SEQ Table|. A \cmd{label} after the caption becomes a bookmark around that field, and
+\cmd{ref} becomes a \texttt{REF} field pointing to it, so if a figure is added or deleted
+in Word, updating fields (select all, then \textsf{F9}) renumbers the captions and every
+reference to them, except the panel references described above. A table caption may come above the table, as in
+Table~\ref{tab:figures-formats}; it is then kept with the table that follows it.
+
+For the same reason, \cmd{listoffigures} and \cmd{listoftables} do not produce a static
+list. Each inserts a heading and a Word table-of-contents field built from the caption
+fields, \verb|TOC \h \z \c "Figure"| or \verb|TOC \h \z \c "Table"|, which Word fills in
+the next time fields are updated. This guide does not include one, but a document that
+does gets clickable entries with page numbers computed by Word's own layout.
+
+\begin{tip}
+Give every float a \cmd{label} placed \emph{after} its \cmd{caption}. A label placed
+before the caption picks up the number of the current section or subsection
+instead, in \LaTeX{} and in \texdocx{} alike.
+\end{tip}

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+out/
+*.docx
+!tests/fixtures/**/*.docx
+.DS_Store

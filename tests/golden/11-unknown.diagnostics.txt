@@ -1,0 +1,4 @@
+W010 unknown package fancyunknownpkg; its commands will be reported as unknown
+W013 unknown command \mybox, rendered its arguments as text
+W013 unknown command \undefinedthing, rendered its arguments as text
+W011 unknown environment unknownenv; its content is kept

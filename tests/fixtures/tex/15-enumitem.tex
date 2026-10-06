@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{enumitem}
+\renewcommand{\labelitemi}{$\circ$}
+\setlist[enumerate,2]{label=\Alph*)}
+\begin{document}
+\begin{enumerate}[label=(\alph*)]
+  \item First\label{it:a}
+  \item Second
+\end{enumerate}
+Interlude.
+\begin{enumerate}[resume*]
+  \item Third, resumed
+\end{enumerate}
+\begin{enumerate}[start=5, label=\Roman*.]
+  \item Five
+  \begin{enumerate}
+    \item Nested with setlist
+  \end{enumerate}
+\end{enumerate}
+\begin{enumerate}[i)]
+  \item Short label
+\end{enumerate}
+\begin{enumerate}
+  \setcounter{enumi}{3}
+  \item Starts at four\label{it:four}
+\end{enumerate}
+\begin{itemize}
+  \item Circle bullet
+  \begin{itemize}[label=\textbullet]
+    \item Explicit bullet
+  \end{itemize}
+\end{itemize}
+Refs: \ref{it:a} and \ref{it:four}.
+\end{document}

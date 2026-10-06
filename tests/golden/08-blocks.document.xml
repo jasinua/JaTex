@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>
+<w:p><w:pPr><w:pStyle w:val="BlockText"/></w:pPr><w:r><w:t>A short quotation.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Quotation"/></w:pPr><w:r><w:t>A longer quotation.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Quotation"/></w:pPr><w:r><w:t>With two paragraphs.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="Verse"/></w:pPr><w:r><w:t>Roses are red,</w:t></w:r><w:r><w:br/></w:r><w:r><w:t>violets are blue.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/><w:jc w:val="center"/></w:pPr><w:r><w:t>Centered text.</w:t></w:r><w:r><w:br/></w:r><w:r><w:t>Second line.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/><w:jc w:val="right"/></w:pPr><w:r><w:t>Right aligned.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/><w:jc w:val="left"/></w:pPr><w:r><w:t>Left aligned.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/></w:pPr><w:r><w:t>No indent here.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="BodyText"/><w:spacing w:before="240"/></w:pPr><w:r><w:t>After a big skip.</w:t></w:r></w:p>
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="BodyText"/></w:pPr><w:r><w:t>On a new page.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="SourceCode"/></w:pPr><w:r><w:t xml:space="preserve">  verbatim   keeps    spaces</w:t></w:r></w:p>
+<w:sectPr><w:footerReference w:type="default" r:id="rId4"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr>
+</w:body></w:document>

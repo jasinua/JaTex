@@ -1,0 +1,21 @@
+\documentclass{article}
+\newcommand{\project}{\textsc{TexDocx}}
+\newcommand{\term}[1]{\emph{#1}}
+\newcommand{\greet}[2][Hello]{#1, #2!}
+\def\pair#1#2{(#1, #2)}
+\newenvironment{note}{\begin{quote}\textbf{Note:}}{\end{quote}}
+\NewDocumentCommand{\kw}{s m}{\IfBooleanTF{#1}{\texttt{#2}}{\textbf{#2}}}
+\makeatletter
+\def\@internal{internal}
+\newcommand{\usesinternal}{\@internal}
+\makeatother
+\newif\ifdraft
+\drafttrue
+\begin{document}
+\project{} converts \term{documents}. \greet{World} \greet[Hi]{there} \pair{a}{b}.
+\begin{note}
+Environments defined by the user work.
+\end{note}
+\kw{bold} and \kw*{mono}. Uses \usesinternal.
+\ifdraft Draft mode.\else Final mode.\fi
+\end{document}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>
+<w:p><w:pPr><w:pStyle w:val="BodyText"/></w:pPr><w:r><w:rPr><w:smallCaps/></w:rPr><w:t>TexDocx</w:t></w:r><w:r><w:t xml:space="preserve"> converts </w:t></w:r><w:r><w:rPr><w:i/><w:iCs/></w:rPr><w:t>documents</w:t></w:r><w:r><w:t>. Hello, World! Hi, there! (a, b).</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="BlockText"/></w:pPr><w:r><w:rPr><w:b/><w:bCs/></w:rPr><w:t>Note:</w:t></w:r><w:r><w:t xml:space="preserve"> Environments defined by the user work.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/></w:pPr><w:r><w:rPr><w:b/><w:bCs/></w:rPr><w:t>bold</w:t></w:r><w:r><w:t xml:space="preserve"> and </w:t></w:r><w:r><w:rPr><w:rStyle w:val="VerbatimChar"/></w:rPr><w:t>mono</w:t></w:r><w:r><w:t>. Uses internal. Draft mode.</w:t></w:r></w:p>
+<w:sectPr><w:footerReference w:type="default" r:id="rId4"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr>
+</w:body></w:document>

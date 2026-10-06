@@ -1,0 +1,16 @@
+% Shared preamble for the texdocx user guide. Section files rely on these macros.
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,graphicx,booktabs,tabularx,longtable,multirow,enumitem,xcolor,hyperref,listings,subcaption}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr,lastpage}
+\graphicspath{{figs/}}
+\definecolor{accent}{HTML}{1F5FAD}
+\newcommand{\texdocx}{\textsf{texdocx}}
+\newcommand{\cmd}[1]{\texttt{\textbackslash#1}}
+\newcommand{\env}[1]{\texttt{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\DeclareMathOperator{\argmax}{arg\,max}
+\newenvironment{tip}{\begin{quote}\textbf{\textcolor{accent}{Tip.}}}{\end{quote}}

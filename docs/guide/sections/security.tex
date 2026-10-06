@@ -1,0 +1,156 @@
+\section{Safety and Diagnostics}\label{sec:security}
+
+A \LaTeX{} file is a program, not just a document. Compiling one with a
+traditional \TeX{} engine can read arbitrary files, write new ones and, with
+shell escape enabled, run commands on your machine. \texdocx{} is designed to
+convert documents you did not write: papers from co-authors, submissions,
+templates downloaded from the web. It therefore treats every input as
+untrusted. It does not call a \TeX{} engine at all; it reimplements the
+\LaTeX{} front end (tokenizer, macro expansion, document structure) and only
+ever produces a \texttt{.docx} file.
+
+\subsection{Sandbox guarantees}\label{sec:security-sandbox}
+
+The following properties hold for every document, whatever macros it defines.
+The project's security test suite checks the main ones on every test run.
+
+\begin{itemize}
+  \item \textbf{Root confinement.} \cmd{input}, \cmd{include}, \cmd{subfile}
+    and \cmd{includegraphics} can read only files inside the project folder:
+    by default the folder of the main file, or the folder given with
+    \verb|--root|. Absolute paths, paths starting with \verb|~| and \verb|../|
+    escapes are refused with error E004. Such paths are rejected on their text
+    alone, before any file is looked up, so the file system outside the
+    project is not touched. The
+    refusal reads the same whether the outside file exists or not, so a
+    document cannot use it to discover your files.
+  \item \textbf{Symbolic links.} Every candidate file is resolved to its real
+    path before it is opened. A link inside the project that points outside
+    it is refused exactly like a \verb|../| path.
+  \item \textbf{Restricted file types.} Source commands read
+    \texttt{.tex}, \texttt{.ltx}, \texttt{.bbl}, \texttt{.tikz} and
+    \texttt{.pgf} files; \cmd{includegraphics} reads only image formats
+    (PNG, JPEG, GIF, BMP, SVG, PDF, EPS, PS). A file with any other extension,
+    such as \texttt{.key} or \texttt{.json}, is refused with E004 even when
+    it lies inside the project. A file with \emph{no} extension is still
+    read, as in \LaTeX{}, where \verb|\input{chapter}| falls back to a file
+    named \texttt{chapter}; at present this also lets dotfiles such as
+    \texttt{.env} through.
+  \item \textbf{No shell.} \cmd{write18} is recognised and ignored with
+    warning W017; no command is ever executed. For the same reason, PDF and
+    EPS figures are not converted with external tools: \texdocx{} uses a PNG,
+    SVG or JPEG file of the same name if one exists, and otherwise inserts a
+    placeholder.
+  \item \textbf{No file writes.} \cmd{openout} is ignored with warning W016.
+    The only file written is the \texttt{.docx} you asked for.
+  \item \textbf{No network.} A file name that looks like a URL is refused as a
+    remote resource. Links made with \cmd{href} and \cmd{url} are copied
+    into the Word file as hyperlinks; they are never fetched.
+  \item \textbf{Resource budgets.} Macro expansion is limited to 5\,000\,000
+    steps, a nesting depth of 10\,000, 50\,000\,000 tokens and 60 seconds of
+    wall-clock time. Each file the document reads may be at most 20\,MiB,
+    and one run reads at most 2\,000 files. A macro bomb such as \verb|\def\a{\a\a}\a| stops with
+    error E003, which names the macro stack that ran away; the text converted
+    up to that point is kept.
+\end{itemize}
+
+Text from the document is always escaped before it reaches the Word XML, so
+words such as \texttt{INCLUDETEXT} or \texttt{DDE} in the source remain plain
+text and cannot turn into active Word fields.
+
+\begin{tip}
+The sandbox protects everything outside the project folder. Treat the folder
+itself as readable by the document, because the type check does not stop
+files without an extension: keep credentials, \texttt{.env} files and
+private keys somewhere else, and point \verb|--root| at the smallest folder
+that holds the sources and figures.
+\end{tip}
+
+\subsection{Why there is no shell at all}\label{sec:security-shell}
+
+Many \TeX{} installations allow a restricted shell escape that runs only a
+list of trusted programs. That design depends on every engine enforcing the
+list correctly, and it has failed in practice.
+\href{https://nvd.nist.gov/vuln/detail/cve-2023-32700}{CVE-2023-32700}
+describes how LuaTeX before version 1.17.0 let a document reach the original
+\texttt{io.popen} function and so run arbitrary shell commands while
+compiling an untrusted file. The National Vulnerability Database rates it
+CVSS~3.1 base score 7.8 (High). The fix is to upgrade to LuaTeX 1.17.0 or
+later; for distributions, that means TeX Live 2023 from revision 66984 on,
+or MiK\TeX{} 23.5 and newer. \texdocx{} avoids this whole class of
+problem by having no code path that starts a process: there is no allow-list
+to bypass.
+
+\subsection{Risks and recommended actions}\label{sec:security-risks}
+
+Table~\ref{tab:security-risks} lists the main risks of converting an
+untrusted document and what to do about each. The severity column is the
+\texdocx{} project's own rating of the impact if the risk were not handled;
+only the CVE row carries an official CVSS score.
+
+\begin{table}[ht]
+  \centering
+  \caption{Risks of converting untrusted \LaTeX{} and how they are handled.}
+  \label{tab:security-risks}
+  \begin{tabularx}{\textwidth}{XlX}
+    \toprule
+    \textbf{Risk} & \textbf{Severity} & \textbf{Recommended action} \\
+    \midrule
+    Shell escape (\cmd{write18}, CVE-2023-32700) & High & None in \texdocx{} (never run, W017); patch \TeX{} installs \\
+    Reading files outside the project & High & Keep \verb|--root| at the project folder; E004 blocks escapes \\
+    Reading secrets inside the project (dotfiles, files without extension) & Medium & Keep secrets out of the \verb|--root| folder \\
+    Symbolic links leaving the project & High & None needed; real paths are checked \\
+    Writing files (\cmd{openout}) & Medium & None needed; ignored with W016 \\
+    Fetching remote resources & Medium & None needed; URLs are refused with E004 \\
+    Macro bombs, runaway recursion & Medium & Rely on budgets (E003); add a process timeout on servers \\
+    Silently lost content & Low & Review W013 and W014, or use \verb|--strict| \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Reading diagnostics}\label{sec:security-diagnostics}
+
+\texdocx{} reports problems in the style of a modern compiler: a severity and
+a stable code, a message, the file, line and column, the offending source
+line with a caret under the exact spot, and often a hint. The following
+output comes from a short file that uses an undefined macro and tries to
+read a file outside its folder:
+
+\begin{verbatim}
+warning[W013]: unknown command \highlightbox, rendered its arguments as text
+ --> report.tex:3:13
+  |
+3 | Results are \highlightbox{significant} at $p<0.05$.
+  |             ^^^^^^^^^^^^^
+  = hint: define it with \newcommand or add a package handler
+
+error[E004]: \input{../secret}: the file is outside the project folder
+ --> report.tex:4:1
+  |
+4 | \input{../secret}
+  | ^
+\end{verbatim}
+
+The run still writes a \texttt{.docx}, but exits with status 1 because there
+was an error. With \verb|--json| each diagnostic is printed as one JSON
+object per line, which is convenient for editors and continuous integration;
+\verb|--strict| turns every warning into an error. Three codes are worth
+knowing:
+
+\begin{description}
+  \item[W013 (unknown command)] \texdocx{} has no handler for the command and
+    no definition was found. Its brace arguments are kept as ordinary text,
+    but an optional argument in square brackets is dropped, and the
+    formatting the command would have applied is lost. Define the command with \cmd{newcommand} in your preamble, or check
+    for a typo.
+  \item[W014 (unsupported feature approximated)] The construct was understood
+    but has no exact Word equivalent, so \texdocx{} approximated it. Examples
+    are a PDF figure replaced by a placeholder, \cmd{hfill} turned into a tab,
+    or an image rotation that is not applied. Read the message and check that
+    spot in the Word file.
+  \item[E004 (file access denied)] A file request broke a sandbox rule: it
+    was outside the project, an absolute path, a URL, a file type the
+    command may not read, or over a size or file-count limit. The file is never opened: a refused \cmd{input} inserts nothing, and a
+    refused figure appears as a placeholder that names the file.
+    Move the file into the project folder or change \verb|--root|.
+\end{description}

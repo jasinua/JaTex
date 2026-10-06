@@ -1,0 +1,41 @@
+\documentclass{article}
+\newcommand*{\project}{\textbf{texdocx}}
+\providecommand{\project}{NOT USED}
+\NewDocumentEnvironment{boxed}{O{Box} b}{\par\noindent\textbf{#1:} #2}{\par}
+\NewDocumentCommand{\opt}{m o}{#1\IfValueT{#2}{ [#2]}}
+\def\swap#1#2{#2#1}
+\edef\expanded{\project}
+\let\oldemph\emph
+\renewcommand{\emph}[1]{\oldemph{\textbf{#1}}}
+\makeatletter
+\newcommand{\maybe}{\@ifnextchar[{\maybe@opt}{\maybe@noopt}}
+\def\maybe@opt[#1]#2{with #1: #2}
+\def\maybe@noopt#1{without: #1}
+\newcommand{\starry}{\@ifstar{starred}{plain}}
+\makeatother
+\newcounter{example}
+\renewcommand{\theexample}{E\arabic{example}}
+\newcommand{\example}[1]{\refstepcounter{example}Example \theexample: #1}
+\expandafter\def\csname dyn name\endcsname{dynamic}
+\begin{document}
+\swap{b}{a} \expanded{} \emph{important} \opt{x} \opt{y}[z].
+\maybe[opt]{arg} and \maybe{arg}; \starry* and \starry.
+\example{first}\label{ex:first} \example{second}. See \ref{ex:first}.
+\csname dyn name\endcsname{} \ifcsname dyn name\endcsname defined\fi
+\ifdefined\undefinedmacro wrong\else right\fi.
+\begin{boxed}[Note]
+Body captured by the b argument.
+\end{boxed}
+\input{parts/included}
+\begin{lstlisting}[language=Python]
+def f(x):
+    return x % 2  # comment & stuff
+\end{lstlisting}
+\begin{minted}{rust}
+fn main() { println!("{}", 1); }
+\end{minted}
+\begin{comment}
+This text \is{not} rendered.
+\end{comment}
+After the comment.
+\end{document}

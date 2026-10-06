@@ -1,0 +1,2 @@
+W014 \hfill is approximated by a tab
+W014 figs/vector.pdf: PDF/EPS figures cannot be embedded in .docx; a placeholder was inserted

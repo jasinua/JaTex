@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage{booktabs,multirow,tabularx,longtable}
+\begin{document}
+\begin{tabular}{|l|c|r|}
+\hline
+Left & Center & Right \\
+\hline\hline
+a & b & c \\
+\cline{2-3}
+\multicolumn{2}{|c|}{Spans two} & x \\
+\hline
+\end{tabular}
+
+\begin{table}[ht]
+\centering
+\caption{Results with booktabs.}\label{tab:res}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Method & Accuracy & Time (s) \\
+\midrule
+\textbf{Ours} & $0.95$ & 12.3 \\
+Baseline & 0.81 & 8.0 \\
+\multirow{2}{*}{Merged} & 1 & 2 \\
+ & 3 & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Table~\ref{tab:res} shows results.
+
+\begin{tabularx}{\textwidth}{lX}
+Key & A long paragraph cell that should wrap within the flexible column of a tabularx environment. \\
+\end{tabularx}
+
+\begin{tabular}{p{3cm}>{\bfseries}c}
+Paragraph column & bold column \\
+\end{tabular}
+
+\begin{longtable}{ll}
+\caption{A long table.}\\
+Head A & Head B \\ \hline
+\endfirsthead
+Head A (cont.) & Head B \\ \hline
+\endhead
+\hline \multicolumn{2}{r}{continued} \\
+\endfoot
+\endlastfoot
+r1 & v1 \\
+r2 & v2 \\
+\end{longtable}
+\end{document}

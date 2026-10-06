@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>
+<w:p><w:pPr><w:pStyle w:val="BodyText"/></w:pPr><w:r><w:t>Before the list.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr></w:pPr><w:r><w:t>Apples</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr></w:pPr><w:r><w:t>Pears</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="1"/><w:numId w:val="3"/></w:numPr></w:pPr><w:r><w:t>Conference</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="1"/><w:numId w:val="3"/></w:numPr></w:pPr><w:r><w:t>Williams</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:ind w:left="500" w:hanging="400"/></w:pPr><w:r><w:t>–</w:t></w:r><w:r><w:tab/></w:r><w:r><w:t>Custom label</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/></w:pPr><w:r><w:t>continues without indentation.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="4"/></w:numPr></w:pPr><w:bookmarkStart w:id="0" w:name="lbl_it_one"/><w:r><w:t>One</w:t></w:r><w:bookmarkEnd w:id="0"/></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="4"/></w:numPr></w:pPr><w:r><w:t>Two</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="1"/><w:numId w:val="5"/></w:numPr></w:pPr><w:bookmarkStart w:id="1" w:name="lbl_it_twoa"/><w:r><w:t>Two-a</w:t></w:r><w:bookmarkEnd w:id="1"/></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="1"/><w:numId w:val="5"/></w:numPr></w:pPr><w:r><w:t>Two-b</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="4"/></w:numPr></w:pPr><w:r><w:t>Three</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:ind w:left="500" w:firstLine="0"/></w:pPr><w:r><w:t>with a second paragraph.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:ind w:left="500" w:hanging="500"/></w:pPr><w:r><w:rPr><w:b/><w:bCs/></w:rPr><w:t>Term</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t>Definition of the term.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="ListParagraph"/><w:ind w:left="500" w:hanging="500"/></w:pPr><w:r><w:rPr><w:b/><w:bCs/></w:rPr><w:t>Another</w:t></w:r><w:r><w:t xml:space="preserve"> </w:t></w:r><w:r><w:t>Second definition.</w:t></w:r></w:p>
+<w:p><w:pPr><w:pStyle w:val="FirstParagraph"/></w:pPr><w:r><w:t xml:space="preserve">Items </w:t></w:r><w:hyperlink w:anchor="lbl_it_one" w:history="1"><w:r><w:t>1</w:t></w:r></w:hyperlink><w:r><w:t xml:space="preserve"> and </w:t></w:r><w:hyperlink w:anchor="lbl_it_twoa" w:history="1"><w:r><w:t>2a</w:t></w:r></w:hyperlink><w:r><w:t>.</w:t></w:r></w:p>
+<w:sectPr><w:footerReference w:type="default" r:id="rId4"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr>
+</w:body></w:document>

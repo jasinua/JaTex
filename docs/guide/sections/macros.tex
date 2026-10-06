@@ -1,0 +1,171 @@
+\section{Macros and Customisation}\label{sec:macros}
+
+Many converters treat a \LaTeX{} document as a tree of known commands and give up on
+anything else. \texdocx{} instead rebuilds \TeX's front end: a tokenizer with category
+codes and a macro expander with grouping, conditionals, registers and counters. Your own
+definitions are therefore \emph{executed}, the way \LaTeX{} would execute them, and
+the Word file receives their result rather than the raw macro name. Every example
+macro below is defined in this section's own source file and then used live; the code
+blocks show the definitions verbatim.
+
+\subsection{Commands with optional arguments}
+
+\cmd{newcommand} accepts an optional first argument with a default value, just like in
+\LaTeX. The following macro typesets a keyword in bold and colours it, using the accent
+colour from the preamble unless another colour is given:
+
+\begin{verbatim}
+\newcommand{\keyword}[2][accent]{\textcolor{#1}{\textbf{#2}}}
+\end{verbatim}
+\newcommand{\keyword}[2][accent]{\textcolor{#1}{\textbf{#2}}}
+
+Writing \verb|\keyword{expansion}| gives \keyword{expansion}, while
+\verb|\keyword[accent!50]{tint}| gives \keyword[accent!50]{tint}. The second form uses an
+\texttt{xcolor} mixing expression: \texttt{accent!50} is half accent and half white, and
+\texttt{accent!60!black} would mix the accent with black instead. \texdocx{} evaluates
+these expressions itself and writes the resulting RGB value into the run, so
+\textcolor{accent}{plain accent text} and \textcolor{accent!50}{the lighter mix} both
+survive as ordinary Word font colours that you can change later.
+
+\subsection{Environments}
+
+\cmd{newenvironment} works with arguments and an optional default, and the end code runs
+before the environment name is checked, as in \LaTeX:
+
+\begin{verbatim}
+\newenvironment{aside}[1][Aside]
+  {\par\medskip\noindent\textcolor{accent}{\textbf{#1.}}\ \itshape}
+  {\par\medskip}
+\end{verbatim}
+\newenvironment{aside}[1][Aside]
+  {\par\medskip\noindent\textcolor{accent}{\textbf{#1.}}\ \itshape}
+  {\par\medskip}
+
+\begin{aside}[Why it matters]
+Declarations such as \cmd{itshape} inside an environment are local to it. This
+paragraph is italic; the one after the environment is not.
+\end{aside}
+
+Back to upright text: the group opened by \verb|\begin{aside}| was closed by
+\verb|\end{aside}|, and the font change went with it.
+
+\subsection{Star arguments with xparse}
+
+\cmd{NewDocumentCommand} takes an argument specification instead of a count. Below,
+\texttt{s} is an optional star, \texttt{m} a mandatory argument and \texttt{o} an
+optional bracketed argument with no default:
+
+\begin{verbatim}
+\NewDocumentCommand{\concept}{s m o}{%
+  \IfBooleanTF{#1}{\emph{#2}}{\textbf{#2}}%
+  \IfValueT{#3}{ (#3)}}
+\end{verbatim}
+\NewDocumentCommand{\concept}{s m o}{%
+  \IfBooleanTF{#1}{\emph{#2}}{\textbf{#2}}%
+  \IfValueT{#3}{ (#3)}}
+
+So \verb|\concept{catcode}| prints \concept{catcode}, \verb|\concept*{catcode}| prints
+\concept*{catcode}, and \verb|\concept{OMML}[Office Math]| prints
+\concept{OMML}[Office Math]. \cmd{NewDocumentEnvironment}, including the \texttt{b}
+argument that captures the whole body, is supported as well.
+
+\subsection{Primitive definitions}
+
+Plain \TeX{} definitions work too. A \cmd{def} may use \emph{delimited} parameters, where the
+text between parameters must appear literally in the input:
+
+\begin{verbatim}
+\def\interval[#1..#2]{$[#1,#2]$}
+\end{verbatim}
+\def\interval[#1..#2]{$[#1,#2]$}
+
+Here \verb|\interval[0..1]| becomes \interval[0..1] and \verb|\interval[a..b]| becomes
+\interval[a..b]: the expander matched the two dots and the closing bracket to split the
+arguments. Switches made with \cmd{newif} behave like their \TeX{} counterparts:
+
+\begin{verbatim}
+\newif\ifshowhints
+\showhintstrue  \ifshowhints Hints are on.\else Hints are off.\fi
+\showhintsfalse \ifshowhints Hints are on.\else Hints are off.\fi
+\end{verbatim}
+\newif\ifshowhints
+
+After \verb|\showhintstrue| the test prints
+``\showhintstrue\ifshowhints Hints are on.\else Hints are off.\fi'' and after
+\verb|\showhintsfalse| it prints
+``\showhintsfalse\ifshowhints Hints are on.\else Hints are off.\fi'' instead. Other primitives
+such as \cmd{edef}, \cmd{let}, \cmd{expandafter}, \cmd{csname} and \cmd{ifx} are
+available for the same kind of programming.
+
+\begin{tip}
+All expansion runs under budgets for expansion steps, nesting depth, token count and
+wall-clock time. A runaway recursive macro therefore stops with error E003, which names
+the macro stack, instead of hanging the conversion. A command that is not defined at all
+is reported as warning W013, and its arguments are kept as text.
+\end{tip}
+
+\subsection{Counters and cross-references}
+
+Custom counters take part in the same numbering machinery as sections and equations. The
+counter below resets with every section, and its printed form is redefined to show
+the section number followed by a capital letter:
+
+\begin{verbatim}
+\newcounter{checkpoint}[section]
+\renewcommand{\thecheckpoint}{\thesection.\Alph{checkpoint}}
+\newcommand{\checkpoint}[1]{\par\noindent
+  \refstepcounter{checkpoint}\textbf{Checkpoint \thecheckpoint.} #1\par}
+\end{verbatim}
+\newcounter{checkpoint}[section]
+\renewcommand{\thecheckpoint}{\thesection.\Alph{checkpoint}}
+\newcommand{\checkpoint}[1]{\par\noindent
+  \refstepcounter{checkpoint}\textbf{Checkpoint \thecheckpoint.} #1\par}
+
+\checkpoint{The document compiles without errors.}\label{cp:macros-compiles}
+\checkpoint{Every label is referenced at least once.}\label{cp:macros-labels}
+
+Because \cmd{refstepcounter} sets the current label, \verb|\ref{cp:macros-labels}|
+yields \ref{cp:macros-labels} and \verb|\ref{cp:macros-compiles}| yields
+\ref{cp:macros-compiles}, the same text that \LaTeX{} prints. Note that the format,
+including the section prefix, comes from your redefinition of \cmd{thecheckpoint}.
+
+\subsection{Customised lists}
+
+The \texttt{enumitem} keys are read too. A list can choose its own label format and a
+later list can continue where it stopped, with \texttt{resume*} also reusing the first
+list's options:
+
+\begin{verbatim}
+\begin{enumerate}[label=(\alph*)]
+  \item Write the macro.
+  \item Use it in the text.
+\end{enumerate}
+\begin{enumerate}[resume*]
+  \item Check the output.
+\end{enumerate}
+\end{verbatim}
+
+The live version, with a paragraph between the two lists:
+
+\begin{enumerate}[label=(\alph*)]
+  \item Write the macro in the preamble or before its first use.\label{it:macros-write}
+  \item Use it in the text as often as needed.
+\end{enumerate}
+Then compile the document and open the result in Word.
+\begin{enumerate}[resume*]
+  \item Check the output: the numbering continues with the same format.\label{it:macros-check}
+\end{enumerate}
+
+Item references follow the label format, so \verb|\ref{it:macros-check}| gives
+\ref{it:macros-check} and \verb|\ref{it:macros-write}| gives \ref{it:macros-write}.
+
+\subsection{Limits}
+
+Code inside \cmd{ExplSyntaxOn}\,\dots\,\cmd{ExplSyntaxOff} is not interpreted; the block
+is skipped with warning W015. A package that \texdocx{} does not know is reported as
+W010. Packages that are accepted without a warning do not
+necessarily implement every one of their commands, and an unknown command still produces
+W013. The commands that \texdocx{} recognises are listed in
+\texttt{docs/supported-commands.md}. Section~\ref{sec:features} gives an overview of the
+other document features, and Section~\ref{sec:security} explains the sandbox in which all
+of this expansion runs.

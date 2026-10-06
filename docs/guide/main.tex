@@ -1,0 +1,24 @@
+\input{preamble}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\texdocx{} User Guide}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{Page \thepage\ of \pageref{LastPage}}
+\title{\texdocx: From \LaTeX{} to Editable Word}
+\author{The \texdocx{} Project}
+\date{6 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+This guide was written in \LaTeX{} and converted to Word by \texdocx{} itself.
+Every equation in it is a native, editable Word equation; every cross-reference,
+caption number and the table of contents are Word fields.
+\end{abstract}
+\tableofcontents
+\input{sections/intro}
+\input{sections/features}
+\input{sections/math}
+\input{sections/macros}
+\input{sections/figures}
+\input{sections/security}
+\end{document}

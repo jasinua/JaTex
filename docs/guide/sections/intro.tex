@@ -1,0 +1,106 @@
+\section{Introduction}\label{sec:intro}
+
+\texdocx{} is a compiler that turns a \LaTeX{} document into a Word file
+(\texttt{.docx}). It does not run \TeX{} and it does not print to PDF first.
+Instead it rebuilds the part of \LaTeX{} that \emph{reads} your source---the
+tokenizer with its category codes, macro expansion, document structure and
+mathematics---and hands the result to Word, which does the layout itself when
+it opens the file. Line breaking, page breaking and font metrics are Word's job,
+so the output reflows like any document typed in Word.
+
+Three properties set \texdocx{} apart from converters that only approximate the
+look of a \LaTeX{} paper:
+\begin{itemize}
+  \item \textbf{Equations stay editable.} Every formula becomes native Office
+        Math (OMML), so a co-author can click into it and change a subscript in
+        Word's equation editor. Section~\ref{sec:math} covers the details.
+  \item \textbf{Numbers are live.} References to sections, equations,
+        figures and tables, the equation and caption numbers themselves and
+        the table of contents are written as Word fields with the correct value
+        already filled in, so the document looks right as soon as it opens and
+        Word can update the numbers after you edit it.
+  \item \textbf{Your macros work.} \texdocx{} has a real macro expander, so
+        \cmd{newcommand}, \cmd{def}, conditionals and environments you define
+        yourself are expanded by \TeX's own rules instead of being
+        matched against patterns (Section~\ref{sec:macros}).
+\end{itemize}
+
+This guide is itself a test of those claims: it was written in \LaTeX{} and
+converted by \texdocx{}. Section~\ref{sec:features} surveys the supported
+document features, Section~\ref{sec:figures} covers figures and tables, and
+Section~\ref{sec:security} covers safety and diagnostics, including the sandbox
+that keeps a document from reading anything outside its own folder.
+
+\subsection{Quick start}
+
+\texdocx{} needs Node.js~23.6 or newer and the pnpm package
+manager.\footnote{The compiler is written in TypeScript and runs directly
+through Node's built-in type stripping, which is why there is no build step and
+why older Node versions are not supported.} From the repository root, install
+the dependencies once and then convert a file:
+\begin{lstlisting}[language=bash]
+pnpm install
+pnpm texdocx paper.tex                 # writes paper.docx next to it
+pnpm texdocx paper.tex -o out.docx --json --strict
+\end{lstlisting}
+
+Problems are reported the way a compiler reports them: a severity, a code such
+as \texttt{W013}, the file, line and column, the offending source line and,
+where possible, a hint. The command accepts the following options:
+\begin{description}
+  \item[\texttt{-o}, \texttt{-{}-output} \textit{file}] Where to write the
+        Word file. By default the output takes the input's name with the
+        extension \texttt{.docx}.
+  \item[\texttt{-{}-root} \textit{dir}] The folder the document may read
+        from. By default this is the folder that contains the input file;
+        \cmd{input} and \cmd{includegraphics} cannot reach outside it.
+  \item[\texttt{-{}-strict}] Treat every warning as an error, for example to
+        make a build fail on an unknown command.
+  \item[\texttt{-{}-json}] Print each diagnostic as one line of JSON instead of
+        the human-readable form, for editors and scripts.
+  \item[\texttt{-q}, \texttt{-{}-quiet}] Print errors only.
+  \item[\texttt{-h}, \texttt{-{}-help}] Show a short usage summary.
+\end{description}
+The exit status is~0 on success, 1 when the document had errors and 2 when the
+command line was wrong or the input file could not be read. The Word file is written even when there are
+errors, so you can open it and see what went wrong.
+
+\begin{tip}
+Run \texdocx{} with \texttt{-{}-strict} in continuous integration. A warning
+about an unknown command usually means some text in the Word file is not what
+you meant.
+\end{tip}
+
+\subsection{How it works}
+
+\texdocx{} is designed as a pipeline of six stages. Only the first three
+resemble \TeX; the last three replace \TeX's typesetter with a typed document
+model and a Word writer. As in \TeX, the first four stages run interleaved,
+one token at a time: the digester asks the expander for the next token, the
+expander asks the lexer, and a file is loaded only when the command that
+names it runs.
+\begin{enumerate}
+  \item \textbf{Load.} Every file the document pulls in through
+        \cmd{input}, \cmd{include} or \cmd{includegraphics} is read through
+        a sandbox confined to the project folder, and every token remembers
+        where it came from, so a diagnostic can name the file, line and column.
+  \item \textbf{Tokenize.} The lexer turns characters into tokens, looking
+        up each character's category code as it reads it, so a
+        \cmd{makeatletter} or \cmd{catcode} in the document changes how the
+        very next character is read.
+  \item \textbf{Expand.} The expander replaces macros by their definitions and
+        evaluates conditionals and groups, within budgets on steps, nesting
+        depth, token count and time so that a runaway macro stops with an error.
+  \item \textbf{Digest.} Command and environment handlers build a document
+        model of headings, paragraphs, lists, tables, figures and math trees
+        instead of \TeX's boxes and glue.
+  \item \textbf{Resolve.} Once the whole document has been read, every
+        \cmd{ref} is matched to its \cmd{label}, so forward references work
+        in a single run where \LaTeX{} needs two. An undefined reference
+        prints \texttt{??} and a warning, as in \LaTeX.
+  \item \textbf{Write.} The writer turns the model into Word's XML---styles,
+        numbering, fields, footnotes, images and equations---and packs it into
+        a byte-for-byte reproducible \texttt{.docx} archive.
+\end{enumerate}
+The writer depends only on the document model and never sees \LaTeX{} source,
+which keeps the quirks of each format on its own side of the model.
